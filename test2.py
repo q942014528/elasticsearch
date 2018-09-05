@@ -7,7 +7,7 @@
 
 import requests
 import json
-
+server = 'http://localhost:9200'
 
 def put():
     data = {
@@ -17,14 +17,15 @@ def put():
       "name": 'huang'
     }
     data = json.dumps(data)
-    result = requests.put('http://localhost:9200/website/blog/123', data=data,
+    result = requests.put('http://localhost:9200/website/blog/1', data=data,
                       headers={'Content-Type': 'application/json'})
     return result
 
 
 def get(search):
-    result = requests.get('http://localhost:9200' + search)
+    result = requests.get(server + search)
     return result
+
 
 def dsl_get():
     data = {
@@ -40,18 +41,30 @@ def dsl_get():
             }
         }
 
-
-
-
     data = json.dumps(data)
     result = requests.get('http://localhost:9200/megacorp/employee/_search', data=data,
                           headers={'Content-Type': 'application/json'})
     return result
 
 
+def post(data):
+    data = json.dumps(data)
+    result = requests.post(server + '/website/blog/1/_update', data=data,
+                           headers={'Content-Type': 'application/json'})
+    return result
+
+
 if __name__ == '__main__':
-    search = '/website/blog/123'
-    result = get(search)
+    search = '/website/blog/1'
+    # result = get(search)
     # result = put()
-    # result = post()
+    data = {
+        "script": "ctx._source.tags+=new_tag",
+        "params": {
+            "new_tag": "search"
+        }
+    }
+
+    result = post(data)
+    # result = put()
     print(json.loads(result.content))
