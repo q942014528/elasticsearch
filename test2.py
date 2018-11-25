@@ -12,12 +12,12 @@ server = 'http://localhost:9200'
 def put():
     data = {
       "title": "My first blog entry",
-      "text":  "Just trying this out... hhhhhh",
-      "date":  "2014/01/01",
-      "name": 'huang'
+      "text":  "Just trying this out... hhhhhh22212321312",
+      "date":  "2014/01/02",
+      "name": 'huanghaohao'
     }
     data = json.dumps(data)
-    result = requests.put('http://localhost:9200/website/blog/1', data=data,
+    result = requests.put('http://localhost:9200/megacorp/employee/2', data=data,
                       headers={'Content-Type': 'application/json'})
     return result
 
@@ -31,18 +31,13 @@ def dsl_get():
     data = {
             "query" : {
                 "match_phrase" : {
-                    "about" : "rock climbing"
+                    "text" : "hhhhhh"
                 }
             },
-            "highlight": {
-                "fields" : {
-                    "about" : {}
-                }
-            }
         }
 
     data = json.dumps(data)
-    result = requests.get('http://localhost:9200/megacorp/employee/_search', data=data,
+    result = requests.get('http://localhost:9200/website/blog/_search', data=data,
                           headers={'Content-Type': 'application/json'})
     return result
 
@@ -54,10 +49,18 @@ def post(data):
     return result
 
 
+def delete(id):
+    result = requests.delete(f'http://localhost:9200/website/blog/{id}',
+                          headers={'Content-Type': 'application/json'})
+    return result
+
+
 if __name__ == '__main__':
     search = '/website/blog/1'
     # result = get(search)
     # result = put()
+    # result = dsl_get()
+    result = delete(1)
     data = {
         "script": "ctx._source.tags+=new_tag",
         "params": {
@@ -65,6 +68,6 @@ if __name__ == '__main__':
         }
     }
 
-    result = post(data)
+    # result = post(data)
     # result = put()
     print(json.loads(result.content))
