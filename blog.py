@@ -79,19 +79,68 @@ class ElasticSearch(object):
         print(content)
         print(result.status_code)
 
+    def mget(self, docs, mget_key = ''):
+        if mget_key:
+            url = "{url}/{index}/{type}/_mget".format(url=self.url, index=self.index, type=self.type)
+        else:
+            url = "{url}/_mget".format(url=self.url)
 
-data = {'name': 'zhangsan', 'age': 21, 'zddress': 'beijing'}
-query_info = {
-    'query': {
-        'match': {
-            'name': 'lisi'
-        }
-    },
+        data = json.dumps(docs)
+        result = requests.get(url, data=data, headers={'Content-Type': 'application/json'})
+        print(result.content)
 
-}
+    def bulk(self, data, bulk_key=False):
 
-elastic_search = ElasticSearch(sea_index='test', sea_type='blog')
-# elastic_search.head(data=query_info)
-# elastic_search.get()
-# elastic_search.put(data=data, id=2, create=True)
-elastic_search.delete(id=1)
+        if bulk_key:
+            url = "{url}/{index}/{type}/_bulk".format(url=self.url, index=self.index, type=self.type)
+        else:
+            url = "{url}/_bulk".format(url=self.url)
+        data = json.dumps(data)
+        result = requests.post(url, data=data, headers={'Content-Type': 'application/json'})
+        print(result.content)
+
+    def get_all(self):
+        url = "{url}/_search".format(url=self.url)
+        result = requests.get(url)
+        print(result.content)
+
+
+if __name__ == '__main__':
+
+    elastic_search = ElasticSearch(sea_index='test', sea_type='blog')
+
+    data = {'name': 'huanghaohao', 'age': 25, 'address': 'beijing'}
+    query_info = {
+        'query': {
+            'match': {
+                'name': 'lisi'
+            }
+        },
+
+    }
+    docs = {
+        'docs': [
+            {'_index': elastic_search.index,
+             '_type': elastic_search.type,
+             '_id': '3'},
+            {'_index': elastic_search.index,
+             '_type': elastic_search.type,
+             '_id': '4'}
+        ]
+    }
+    docs2 = {
+        'ids': ['4', '3', '5']
+    }
+    sea_index = elastic_search.index
+    sea_type = elastic_search.type
+    bulk_data = """
+    {'index': {"_index": "{""" + sea_index + """}", "_type": "{"""+sea_type+"""}" }}\n
+    { "name":    "wangwu", "age": 26, "address": 'beijing' }
+    """
+    # elastic_search.head(data=query_info)
+    # elastic_search.get(source='name,age')
+    # elastic_search.mget(docs2, mget_key=True)
+    # elastic_search.bulk(data=bulk_data)
+    elastic_search.get_all()
+    # elastic_search.put(data=data, id=4, create=True)
+    # elastic_search.delete(id=1)
