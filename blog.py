@@ -133,14 +133,14 @@ if __name__ == '__main__':
     }
     sea_index = elastic_search.index
     sea_type = elastic_search.type
-    bulk_data = """
-    {'index': {"_index": "{""" + sea_index + """}", "_type": "{"""+sea_type+"""}" }}\n
-    { "name":    "wangwu", "age": 26, "address": 'beijing' }
-    """
+    elastic_search.get(id=4)
+
+    bulk_data = """{ "delete": { "_index": """+ sea_index + """, "_type": """ + sea_type+""", "_id": "4" }}\\n"""
+    print(bulk_data)
     # elastic_search.head(data=query_info)
-    # elastic_search.get(source='name,age')
+    # elastic_search.get()
     # elastic_search.mget(docs2, mget_key=True)
     # elastic_search.bulk(data=bulk_data)
-    elastic_search.get_all()
+    # elastic_search.get_all()
     # elastic_search.put(data=data, id=4, create=True)
     # elastic_search.delete(id=1)
