@@ -56,8 +56,12 @@ class ElasticSearch(object):
         content = json.loads(result.content)
         print(content)
 
-    def dsl_get(self):
-        pass
+    def dsl_get(self, query_info):
+        url = "{url}/{index}/{type}/_search".format(url=self.url, index=self.index, type=self.type)
+        data = json.dumps(query_info)
+        result = requests.get(url=url, data=data, headers={'Content-Type': 'application/json'})
+        content = json.loads(result.content)
+        print(content)
 
     def head(self, id='', data=''):
         if id:
@@ -104,20 +108,20 @@ class ElasticSearch(object):
         result = requests.get(url)
         print(result.content)
 
+    def valid_query(self, query_info):
+        url = "{url}/{index}/{type}/_validate/query?explain".format(url=self.url, index=self.index, type=self.type)
+        data = json.dumps(query_info)
+        result = requests.get(url=url, data=data, headers={'Content-Type': 'application/json'})
+        content = json.loads(result.content)
+        print(content)
+
 
 if __name__ == '__main__':
 
     elastic_search = ElasticSearch(sea_index='test', sea_type='blog')
 
-    data = {'name': 'huanghaohao', 'age': 25, 'address': 'beijing'}
-    query_info = {
-        'query': {
-            'match': {
-                'name': 'lisi'
-            }
-        },
+    create_data = {'name': 'lisi123', 'age': 15, 'address': 'beijinghaidian'}
 
-    }
     docs = {
         'docs': [
             {'_index': elastic_search.index,
@@ -133,10 +137,9 @@ if __name__ == '__main__':
     }
     sea_index = elastic_search.index
     sea_type = elastic_search.type
-    elastic_search.get(id=4)
 
     bulk_data = """{ "delete": { "_index": """+ sea_index + """, "_type": """ + sea_type+""", "_id": "4" }}\\n"""
-    print(bulk_data)
+    # print(bulk_data)
     # elastic_search.head(data=query_info)
     # elastic_search.get()
     # elastic_search.mget(docs2, mget_key=True)
@@ -144,3 +147,27 @@ if __name__ == '__main__':
     # elastic_search.get_all()
     # elastic_search.put(data=data, id=4, create=True)
     # elastic_search.delete(id=1)
+    # elastic_search.post(create_data)
+    query_info = {
+        'query': {
+            'match': {
+                'name': 'lisi123',
+
+            }
+        },
+
+    }
+    # bool_query_info = \
+    # {
+    #     'query': {
+    #         'bool': {
+    #             'must':[{'match': {'age': '33'}}, {'match': {'name': 'lisi'}}],
+    #         }
+    #     }
+    # }
+
+
+
+    # elastic_search.get()
+    elastic_search.dsl_get(query_info)
+    # elastic_search.valid_query(bool_query_info)
