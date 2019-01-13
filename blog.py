@@ -99,7 +99,7 @@ class ElasticSearch(object):
             url = "{url}/{index}/{type}/_bulk".format(url=self.url, index=self.index, type=self.type)
         else:
             url = "{url}/_bulk".format(url=self.url)
-        data = json.dumps(data)
+        # data = json.dumps(data)
         result = requests.post(url, data=data, headers={'Content-Type': 'application/json'})
         print(result.content)
 
@@ -150,11 +150,14 @@ if __name__ == '__main__':
     # elastic_search.post(create_data)
     query_info = {
         'query': {
-            'match': {
-                'name': 'lisi123',
+            'match_phrase': {
+                'name': {
+                    'query': 'lisi',
+                }
 
             }
         },
+        'sort': "age"
 
     }
     # bool_query_info = \
